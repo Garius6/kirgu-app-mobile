@@ -6,12 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:kirgu_app/src/services/task_service.dart';
 
 class TasksList extends StatefulWidget {
-  TasksList({super.key});
-
-  final List<Task> tasks = [
-    Task(id: 1, title: "Some title"),
-    Task(id: 2, title: "Some title 2")
-  ];
+  const TasksList({super.key});
 
   @override
   State<TasksList> createState() => _TasksListState();
