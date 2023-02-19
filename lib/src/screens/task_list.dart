@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kirgu_app/src/models/task.dart';
+import 'package:kirgu_app/src/screens/task_create.dart';
 import 'package:kirgu_app/src/screens/task_detail.dart';
 import 'package:http/http.dart' as http;
 
@@ -13,9 +14,23 @@ class TasksList extends StatefulWidget {
 }
 
 class _TasksListState extends State<TasksList> {
+  late Future<List<Task>> fetchTask;
+
   void _openDetails(Task e) {
     Navigator.push(
         context, MaterialPageRoute(builder: (context) => TaskDetail(task: e)));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchTask = fetchTasks(http.Client());
+  }
+
+  void _updateList() {
+    setState(() {
+      fetchTask = fetchTasks(http.Client());
+    });
   }
 
   @override
@@ -23,9 +38,12 @@ class _TasksListState extends State<TasksList> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Task list"),
+        actions: [
+          IconButton(onPressed: _updateList, icon: const Icon(Icons.refresh))
+        ],
       ),
       body: FutureBuilder<List<Task>>(
-          future: fetchTasks(http.Client()),
+          future: fetchTask,
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return const Center(child: Text("Something went wrong"));
@@ -48,12 +66,8 @@ class _TasksListState extends State<TasksList> {
           }),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => TaskDetail(
-                        task: Task(id: 1, title: "some title"),
-                      )));
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const TaskCreateForm()));
         },
         child: const Icon(Icons.add),
       ),
